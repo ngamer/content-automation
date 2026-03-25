@@ -127,7 +127,7 @@ The file lives at:
 ```
 projects/Session_Log.md
 ```
-in the `content-automation` repo.
+in the `content-automation` repo (https://github.com/ngamer/content-automation).
 
 ---
 
@@ -163,6 +163,11 @@ changed this session.
 **Active prompt versions:**
 WorkflowConfig v1.8 · CCW68 v6.8 · ARV20 v2.5 · ARID14 v1.6 ·
 GAP17 v1.8 · CCA1 v3.2 · OperatorChecklist v1.4
+
+**Source file locations on this machine:**
+- Project docs: `C:\Users\noahg\OneDrive\Documents\Content Automation documents\`
+- Skill files: `C:\Users\noahg\OneDrive\Documents\Content Automation documents\Content Automation Skills\`
+- Prompt files: `C:\Users\noahg\OneDrive\Documents\Prompt Design\Content\`
 
 ---
 

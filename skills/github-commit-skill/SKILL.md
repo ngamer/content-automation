@@ -65,11 +65,7 @@ hit this.
 
 ## Step 2 — Identify Where Each File Goes
 
-Files live at:
-- Project docs: `C:\Users\noahg\OneDrive\Documents\Content Automation documents\`
-- Skill files: `C:\Users\noahg\OneDrive\Documents\Content Automation documents\Content Automation Skills\`
-- Prompt files: `C:\Users\noahg\OneDrive\Documents\Prompt Design\Content\`
-
+Files downloaded from Claude land in your Downloads folder by default.
 Use this table to determine the target folder inside the repo:
 
 | Artifact Type | Target Folder in Repo |
@@ -85,7 +81,6 @@ Use this table to determine the target folder inside the repo:
 | Project 2 Atlassian taxonomy files | `projects/project-2/atlassian/` |
 | Project 3 scoping or exec summary | `projects/project-3/` |
 | SQL schema or database file | `projects/project-3/database/` |
-| Skill files | `skills/[skill-name]/SKILL.md` |
 | README update | repo root — rename to `README.md` |
 
 If an artifact doesn't fit any row, ask before assigning a path.
@@ -102,11 +97,6 @@ content-automation/
 ├── analytics/            ← Analytics workflow specs
 ├── paid-media/           ← Paid media specs
 ├── outreach/             ← Outreach specs
-├── skills/
-│   ├── github-commit-skill/
-│   │   └── SKILL.md
-│   └── session-handoff-skill/
-│       └── SKILL.md
 ├── projects/
 │   ├── Project_Status_Current_v1.md
 │   ├── Open_Issues_Registry_v1.md
@@ -137,21 +127,13 @@ content-automation/
 ## Step 3 — Copy Your Files Into the Repo
 
 ```powershell
-# Set source path variables for convenience
-$docs = "C:\Users\noahg\OneDrive\Documents\Content Automation documents"
-$skills = "$docs\Content Automation Skills"
-$prompts = "C:\Users\noahg\OneDrive\Documents\Prompt Design\Content"
-
-# Copy a project doc
-Copy-Item "$docs\[filename]" "projects\"
+# Copy a file from Downloads into a repo folder
+Copy-Item "$env:USERPROFILE\Downloads\[filename]" "projects\"
 
 # Copy into a subfolder
-Copy-Item "$docs\[filename]" "projects\project-2\"
+Copy-Item "$env:USERPROFILE\Downloads\[filename]" "projects\project-2\"
 
-# Copy a skill file
-Copy-Item "$skills\[skillname].md" "skills\[skill-name]\SKILL.md"
-
-# Confirm the file landed
+# Confirm the file landed — you should see it listed
 Get-Item "projects\[filename]"
 ```
 
@@ -160,19 +142,15 @@ copying. If a file is missing, do not proceed to the commit step.
 
 **If a subfolder doesn't exist yet**, create it first:
 ```powershell
-New-Item -ItemType Directory -Force -Path "skills\new-skill-name"
+New-Item -ItemType Directory -Path "projects\project-2\research"
 ```
 
 ---
 
 ## Step 4 — Update CHANGELOG.md
 
-Open `CHANGELOG.md` in Notepad:
-```powershell
-notepad CHANGELOG.md
-```
-
-Add a new entry at the very top, just below the file header:
+Open `CHANGELOG.md` in Notepad (or any text editor) and add a new entry
+at the very top of the file, just below the file header. Format:
 
 ```markdown
 ## [YYYY-MM-DD] — [Short description of what changed]
@@ -214,19 +192,20 @@ the CHANGELOG entry so it's clear this was intentional.
 # Mark each file to include in this commit
 # List files explicitly — do not use "git add ." which stages everything
 git add projects/[filename]
-git add skills/[skill-name]/SKILL.md
+git add projects/project-2/[filename]
 git add CHANGELOG.md
 
-# Review what's about to be committed — should only show files you added
+# Review what's about to be committed
+# You should only see the files you just added
 git status
 
-# Save a snapshot — run commit and push as two separate commands
+# Save a snapshot with a descriptive message
 git commit -m "[Verb] [what was done]
 
 - [file 1]: [one-line description]
 - [file 2]: [one-line description]"
 
-# Upload to GitHub — run this as its own separate command
+# Upload to GitHub
 git push origin main
 ```
 
@@ -235,9 +214,6 @@ git push origin main
 - `git status` — shows what's staged; always review before committing
 - `git commit -m` — saves a labeled snapshot of the changes
 - `git push origin main` — sends your commit up to GitHub
-
-**Important:** Always run `git commit` and `git push` as separate commands.
-Do not paste them together — the commit message quote must close before push runs.
 
 **Commit message verb:** Add / Update / Fix / Document  
 **Subject line:** keep under 72 characters  
@@ -258,7 +234,8 @@ If something looks wrong, do not delete the local folder yet.
 
 ## Step 8 — Clean Up
 
-Once everything looks right on GitHub, delete the local folder:
+Once everything looks right on GitHub, delete the local folder. You don't
+need it — GitHub has the authoritative copy.
 
 ```powershell
 cd "$env:USERPROFILE"
@@ -282,13 +259,9 @@ cd "$env:USERPROFILE"
 git clone https://github.com/ngamer/content-automation
 cd content-automation
 
-# ── SET SOURCE PATHS ───────────────────────────────────────────────
-$docs = "C:\Users\noahg\OneDrive\Documents\Content Automation documents"
-$skills = "$docs\Content Automation Skills"
-
 # ── COPY FILES IN ──────────────────────────────────────────────────
-Copy-Item "$docs\[file1]" "[target folder]\"
-Copy-Item "$docs\[file2]" "[target folder]\"
+Copy-Item "$env:USERPROFILE\Downloads\[file1]" "[target folder]\"
+Copy-Item "$env:USERPROFILE\Downloads\[file2]" "[target folder]\"
 
 # ── VERIFY FILES LANDED ────────────────────────────────────────────
 Get-Item "[target folder]\[file1]"
@@ -302,13 +275,13 @@ git add CHANGELOG.md
 # ── REVIEW — confirm only expected files are listed ─────────────────
 git status
 
-# ── COMMIT (run this line by itself, then press Enter) ──────────────
+# ── COMMIT ─────────────────────────────────────────────────────────
 git commit -m "[Verb] [description]
 
 - [file1]: [description]
 - [file2]: [description]"
 
-# ── PUSH (run this as a separate command after commit succeeds) ──────
+# ── PUSH TO GITHUB ─────────────────────────────────────────────────
 git push origin main
 
 # ── VERIFY on GitHub before cleaning up ────────────────────────────
@@ -346,15 +319,15 @@ After git push — check GitHub:
 If a commit includes a prompt file with a version that doesn't match
 this table, flag it before producing instructions — may be a KI-02 issue.
 
-| Prompt | ID | Current Version |
-|---|---|---|
-| WorkflowConfig | — | v1.8 |
-| Content Creation Workflow | CCW68 | v6.8 |
-| Article Refresh Workflow | ARV20 | v2.5 |
-| Article Refresh Identification | ARID14 | v1.6 |
-| Content Gap Analysis | GAP17 | v1.8 |
-| Content Cluster Analysis | CCA1 | v3.2 |
-| Operator Checklist | — | v1.4 |
+| Prompt (Full Name) | Current Version |
+|---|---|
+| WorkflowConfig | v1.9 |
+| Content Creation Workflow | v6.8 |
+| Article Refresh Workflow | v2.5 |
+| Article Refresh Identification | v1.6 |
+| Content Gap Analysis | v1.8 |
+| Content Cluster Analysis | v3.2 |
+| Operator Checklist | v1.5 |
 
 ---
 
@@ -362,8 +335,8 @@ this table, flag it before producing instructions — may be a KI-02 issue.
 
 | ID | Issue | Status |
 |---|---|---|
-| KI-01 | CCA1 v3.2 output field names unverified against C1/C2/C5 connection maps | Open |
-| KI-02 | ARV20 listed as v2.0/v2.1 in config registry; live file is v2.5 | Open |
+| KI-01 | Content Cluster Analysis v3.2 output field names unverified against Connection C1/C2/C5 translation maps — pre-automation prerequisite, not blocking current manual operations | Open |
+| KI-02 | Article Refresh Workflow version mismatch in WorkflowConfig registry | Resolved March 27, 2026 — WorkflowConfig updated to v1.9 |
 
 ---
 
@@ -371,11 +344,10 @@ this table, flag it before producing instructions — may be a KI-02 issue.
 
 | Problem | What it means | Fix |
 |---|---|---|
-| `git clone` asks for username/password | GitHub auth not configured on this machine | Enter your GitHub username; use a Personal Access Token as the password. Generate one at github.com → Settings → Developer Settings → Personal Access Tokens → Classic → repo scope. |
+| `git clone` asks for username/password | GitHub auth not configured on this machine | Enter your GitHub username; use a Personal Access Token as the password (not your GitHub account password). Generate one at github.com → Settings → Developer Settings → Personal Access Tokens. |
 | `git push` says "rejected" | The repo changed since your clone | Run `git pull origin main` then try `git push` again |
 | `git status` shows unexpected files | Something extra got staged | Run `git restore --staged [filename]` to unstage it |
-| `Copy-Item` says path not found | Target subfolder doesn't exist | Create it: `New-Item -ItemType Directory -Force -Path "[folder path]"` |
+| `Copy-Item` says path not found | Target subfolder doesn't exist | Create it: `New-Item -ItemType Directory -Path "[folder path]"` |
 | File path has spaces and command fails | PowerShell splits on spaces | Wrap the entire path in double quotes |
 | `Remove-Item` says access denied | A file in the folder is open | Close any open files in that folder, then retry |
-| `git commit` opens a text editor | Commit message was missing or malformed | Type `:q!` to exit, then rerun with `-m "your message"` properly quoted |
-| Commit message includes extra text | Paste ran commit + push together | Always run commit and push as separate commands |
+| `git commit` opens a text editor unexpectedly | Commit message was missing or malformed | Close the editor (type `:q!` if it's vim), then rerun with `-m "your message"` in quotes |
